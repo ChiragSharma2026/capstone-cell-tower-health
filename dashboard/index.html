@@ -1,29 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cell Tower Health</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<style>body{font-family:system-ui;margin:2rem;background:#0f172a;color:#e2e8f0}
-canvas{max-width:800px;margin:2rem 0}table{border-collapse:collapse}
-td,th{border:1px solid #334155;padding:6px 10px}</style>
+<style>
+  :root{
+    --bg:#0b1220; --card:#131b2e; --border:#243146;
+    --text:#e6ebf5; --sub:#8b97ac; --accent:#38bdf8; --danger:#f87171; --ok:#34d399;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font:15px/1.5 -apple-system,system-ui,"Segoe UI",sans-serif;
+    padding:2.5rem 1.5rem;
+  }
+  .wrap{max-width:1100px;margin:0 auto}
+  h1{font-size:1.6rem;font-weight:600;letter-spacing:-0.01em;margin:0 0 .25rem}
+  .sub{color:var(--sub);margin:0 0 2rem;font-size:.9rem}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.3rem}
+  .stat .num{font-size:1.9rem;font-weight:650;letter-spacing:-0.02em}
+  .stat .lbl{color:var(--sub);font-size:.78rem;margin-top:.2rem}
+  .stat.warn .num{color:var(--danger)}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
+  .card h2{font-size:1rem;font-weight:600;margin:0 0 .2rem}
+  .card p.desc{color:var(--sub);font-size:.82rem;margin:0 0 1.2rem}
+
+  .chart-box{position:relative;height:280px}
+
+  table{width:100%;border-collapse:collapse;font-size:.85rem}
+  th{text-align:left;color:var(--sub);font-weight:500;padding:.5rem .6rem;border-bottom:1px solid var(--border)}
+  td{padding:.55rem .6rem;border-bottom:1px solid var(--border)}
+  tr:last-child td{border-bottom:none}
+  .badge{display:inline-block;background:rgba(248,113,113,.12);color:var(--danger);
+    border-radius:6px;padding:.1rem .5rem;font-size:.78rem;font-weight:600}
+
+  .grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:1.5rem}
+  @media (max-width:800px){.grid2{grid-template-columns:1fr}}
+  .scroll{max-height:340px;overflow-y:auto}
+</style>
 </head>
 <body>
-<h2>Cell Tower Health Dashboard</h2>
-<canvas id="utilChart"></canvas>
-<h3>Chronic Offenders (&gt;10 days above 5% drop rate)</h3>
-<table id="chronicTable"></table>
+<div class="wrap">
+  <h1>Cell Tower Health Dashboard</h1>
+  <p class="sub">15-day drop-rate analysis · 120 towers · 372,150 calls</p>
+
+  <div class="stats">
+    <div class="stat warn"><div class="num" id="circleDrop">—</div><div class="lbl">Circle-wide drop rate</div></div>
+    <div class="stat"><div class="num" id="chronicCount">—</div><div class="lbl">Chronic towers (&gt;10 days &gt;5%)</div></div>
+    <div class="stat warn"><div class="num" id="worstPct">—</div><div class="lbl">Worst tower peak drop</div></div>
+    <div class="stat"><div class="num" id="worstUtil">—</div><div class="lbl">Drop % at highest utilisation</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Drop Rate vs Utilisation</h2>
+      <p class="desc">The busiest hours are also the worst — drop rate spikes hard past 40% utilisation.</p>
+      <div class="chart-box"><canvas id="utilChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Worst Hour Per Tower (Top 15)</h2>
+      <p class="desc">Peak single-hour drop % vs each tower's overall rate.</p>
+      <div class="scroll">
+        <table id="worstTable"></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Chronic Offenders</h2>
+    <p class="desc">Towers exceeding a 5% drop rate on more than 10 of the 15 days — every one of them is T081–T120.</p>
+    <div class="scroll">
+      <table id="chronicTable"></table>
+    </div>
+  </div>
+</div>
 
 <script>
 fetch('data.json').then(r => r.json()).then(d => {
+  // headline stats
+  const totalCalls = d.util_drop.reduce((a,x)=>a+x.calls,0);
+  const totalDrops = d.util_drop.reduce((a,x)=>a+x.drops,0);
+  document.getElementById('circleDrop').textContent = (100*totalDrops/totalCalls).toFixed(2) + '%';
+  document.getElementById('chronicCount').textContent = d.chronic_towers.length;
+  document.getElementById('worstPct').textContent = Math.max(...d.worst_hours.map(x=>x.worst_hour_pct)) + '%';
+  document.getElementById('worstUtil').textContent = d.util_drop[d.util_drop.length-1].drop_pct + '%';
+
+  // chart
   new Chart(document.getElementById('utilChart'), {
     type: 'line',
-    data: { labels: d.util_drop.map(x => x.util_bucket),
-      datasets: [{ label: 'Drop % vs Utilisation', data: d.util_drop.map(x => x.drop_pct) }] }
+    data: {
+      labels: d.util_drop.map(x => x.util_bucket),
+      datasets: [{
+        label: 'Drop %',
+        data: d.util_drop.map(x => x.drop_pct),
+        borderColor: '#38bdf8',
+        backgroundColor: 'rgba(56,189,248,0.15)',
+        fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: '#38bdf8'
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { title: {display:true, text:'Utilisation bucket', color:'#8b97ac'}, ticks:{color:'#8b97ac'}, grid:{color:'#243146'} },
+        y: { title: {display:true, text:'Drop %', color:'#8b97ac'}, ticks:{color:'#8b97ac'}, grid:{color:'#243146'} }
+      }
+    }
   });
-  const t = document.getElementById('chronicTable');
-  t.innerHTML = '<tr><th>Tower</th><th>Days &gt;5%</th></tr>' +
-    d.chronic_towers.map(x => `<tr><td>${x.tower_id}</td><td>${x.days_over_5pct}</td></tr>`).join('');
+
+  // worst-hour table
+  const wt = document.getElementById('worstTable');
+  wt.innerHTML = '<tr><th>Tower</th><th>Hour</th><th>Worst-hour %</th><th>Overall %</th></tr>' +
+    d.worst_hours.map(x => `<tr><td>${x.tower_id}</td><td>${x.hour_of_day}:00</td>
+      <td><span class="badge">${x.worst_hour_pct}%</span></td><td>${x.tower_pct}%</td></tr>`).join('');
+
+  // chronic table
+  const ct = document.getElementById('chronicTable');
+  ct.innerHTML = '<tr><th>Tower</th><th>Days &gt;5% drop</th></tr>' +
+    d.chronic_towers.map(x => `<tr><td>${x.tower_id}</td><td>${x.days_over_5pct} / 15</td></tr>`).join('');
 });
 </script>
 </body>
