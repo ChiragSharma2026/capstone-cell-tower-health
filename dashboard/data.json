@@ -1,0 +1,47 @@
+{
+  "worst_hours": [
+    {"tower_id":"T091","hour_of_day":18,"worst_hour_pct":34.88,"tower_pct":12.57},
+    {"tower_id":"T117","hour_of_day":18,"worst_hour_pct":34.88,"tower_pct":12.59},
+    {"tower_id":"T104","hour_of_day":18,"worst_hour_pct":34.88,"tower_pct":12.59},
+    {"tower_id":"T098","hour_of_day":18,"worst_hour_pct":34.88,"tower_pct":12.57},
+    {"tower_id":"T111","hour_of_day":18,"worst_hour_pct":34.88,"tower_pct":12.45},
+    {"tower_id":"T085","hour_of_day":18,"worst_hour_pct":34.88,"tower_pct":12.59},
+    {"tower_id":"T116","hour_of_day":18,"worst_hour_pct":34.09,"tower_pct":12.57},
+    {"tower_id":"T112","hour_of_day":18,"worst_hour_pct":34.09,"tower_pct":12.57},
+    {"tower_id":"T086","hour_of_day":10,"worst_hour_pct":34.09,"tower_pct":12.57},
+    {"tower_id":"T082","hour_of_day":10,"worst_hour_pct":34.09,"tower_pct":12.59},
+    {"tower_id":"T120","hour_of_day":18,"worst_hour_pct":34.09,"tower_pct":12.57},
+    {"tower_id":"T115","hour_of_day":18,"worst_hour_pct":34.09,"tower_pct":12.57},
+    {"tower_id":"T103","hour_of_day":10,"worst_hour_pct":34.09,"tower_pct":12.57},
+    {"tower_id":"T106","hour_of_day":18,"worst_hour_pct":34.09,"tower_pct":12.55},
+    {"tower_id":"T099","hour_of_day":18,"worst_hour_pct":34.09,"tower_pct":12.57}
+  ],
+  "chronic_towers": [
+    {"tower_id":"T085","days_over_5pct":15},{"tower_id":"T089","days_over_5pct":15},
+    {"tower_id":"T100","days_over_5pct":15},{"tower_id":"T105","days_over_5pct":15},
+    {"tower_id":"T082","days_over_5pct":15},{"tower_id":"T088","days_over_5pct":15},
+    {"tower_id":"T112","days_over_5pct":15},{"tower_id":"T114","days_over_5pct":15},
+    {"tower_id":"T086","days_over_5pct":15},{"tower_id":"T087","days_over_5pct":15},
+    {"tower_id":"T093","days_over_5pct":15},{"tower_id":"T115","days_over_5pct":15},
+    {"tower_id":"T116","days_over_5pct":15},{"tower_id":"T111","days_over_5pct":15},
+    {"tower_id":"T081","days_over_5pct":15},{"tower_id":"T090","days_over_5pct":15},
+    {"tower_id":"T091","days_over_5pct":15},{"tower_id":"T092","days_over_5pct":15},
+    {"tower_id":"T095","days_over_5pct":15},{"tower_id":"T097","days_over_5pct":15},
+    {"tower_id":"T099","days_over_5pct":15},{"tower_id":"T104","days_over_5pct":15},
+    {"tower_id":"T108","days_over_5pct":15},{"tower_id":"T117","days_over_5pct":15},
+    {"tower_id":"T084","days_over_5pct":15},{"tower_id":"T098","days_over_5pct":15},
+    {"tower_id":"T107","days_over_5pct":15},{"tower_id":"T109","days_over_5pct":15},
+    {"tower_id":"T113","days_over_5pct":15},{"tower_id":"T102","days_over_5pct":15},
+    {"tower_id":"T083","days_over_5pct":15},{"tower_id":"T120","days_over_5pct":15},
+    {"tower_id":"T103","days_over_5pct":15},{"tower_id":"T106","days_over_5pct":15},
+    {"tower_id":"T118","days_over_5pct":15},{"tower_id":"T119","days_over_5pct":15},
+    {"tower_id":"T096","days_over_5pct":15},{"tower_id":"T110","days_over_5pct":15},
+    {"tower_id":"T094","days_over_5pct":15},{"tower_id":"T101","days_over_5pct":15}
+  ],
+  "util_drop": [
+    {"util_bucket":0.1,"drop_pct":0.27,"calls":57322,"drops":154},
+    {"util_bucket":0.2,"drop_pct":0.56,"calls":114370,"drops":640},
+    {"util_bucket":0.4,"drop_pct":1.4,"calls":171831,"drops":2400},
+    {"util_bucket":0.5,"drop_pct":12.57,"calls":28627,"drops":3598}
+  ]
+}
